@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Surat Tugas Otomatis</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Form Surat Tugas</h1>
+  <form id="suratForm">
+    <input type="text" placeholder="Nama Pegawai" id="nama" required><br>
+    <input type="text" placeholder="NIP" id="nip" required><br>
+    <input type="text" placeholder="Jabatan" id="jabatan" required><br>
+    <input type="text" placeholder="Tempat Tujuan" id="tujuan" required><br>
+    <input type="text" placeholder="Keperluan" id="keperluan" required><br>
+    <input type="date" id="tanggal" required><br>
+    <button type="submit">Buat & Simpan Surat</button>
+  </form>
+
+  <h2>Preview Surat</h2>
+  <div id="previewSurat"></div>
+  <button onclick="exportPDF()">Download PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
