@@ -1,10 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Tambah data
 document.getElementById("suratForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -41,20 +42,61 @@ Demikian surat ini dibuat untuk digunakan sebagaimana mestinya.
       nama, nip, jabatan, tujuan, keperluan, tanggal, isiSurat, waktu: new Date()
     });
 
-    // Tambah notifikasi sukses
-    const notif = document.createElement("p");
-    notif.textContent = "✅ Surat berhasil disimpan dan ditampilkan!";
-    notif.style.color = "green";
-    document.getElementById("previewSurat").appendChild(notif);
+    showNotif("✅ Surat berhasil disimpan dan ditampilkan!");
+    loadRiwayat();
   } catch (error) {
-    alert("❌ Gagal menyimpan ke Firebase. Periksa konfigurasi atau koneksi.");
+    alert("❌ Gagal menyimpan ke Firebase.");
     console.error("Firebase Error:", error);
   }
 });
 
+function showNotif(msg) {
+  const notif = document.createElement("p");
+  notif.textContent = msg;
+  notif.style.color = "green";
+  document.getElementById("previewSurat").appendChild(notif);
+}
+
+// Export ke PDF
 window.exportPDF = function () {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.text(document.getElementById("previewSurat").innerText, 10, 10);
   doc.save("surat-tugas.pdf");
 };
+
+// Export ke Word
+window.exportWord = function () {
+  const header = "<html><head><meta charset='utf-8'><title>Surat Tugas</title></head><body>";
+  const content = document.getElementById("previewSurat").innerText.replace(/\n/g, "<br>");
+  const footer = "</body></html>";
+  const sourceHTML = header + content + footer;
+
+  const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+  const fileDownload = document.createElement("a");
+  document.body.appendChild(fileDownload);
+  fileDownload.href = source;
+  fileDownload.download = 'surat-tugas.doc';
+  fileDownload.click();
+  document.body.removeChild(fileDownload);
+};
+
+// Tampilkan Riwayat Surat
+async function loadRiwayat() {
+  const q = query(collection(db, "surat_tugas"), orderBy("waktu", "desc"));
+  const querySnapshot = await getDocs(q);
+  const riwayatDiv = document.getElementById("riwayatSurat");
+  riwayatDiv.innerHTML = "<h3>Riwayat Surat Tugas</h3>";
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const item = document.createElement("div");
+    item.style.margin = "10px 0";
+    item.style.padding = "10px";
+    item.style.border = "1px solid #ccc";
+    item.innerHTML = `<strong>${data.nama}</strong> - ${data.tanggal}<br>${data.tujuan} (${data.keperluan})`;
+    riwayatDiv.appendChild(item);
+  });
+}
+
+loadRiwayat();
