@@ -7,34 +7,49 @@ const db = getFirestore(app);
 
 document.getElementById("suratForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const nama = document.getElementById("nama").value;
-  const nip = document.getElementById("nip").value;
-  const jabatan = document.getElementById("jabatan").value;
-  const tujuan = document.getElementById("tujuan").value;
-  const keperluan = document.getElementById("keperluan").value;
+
+  const nama = document.getElementById("nama").value.trim();
+  const nip = document.getElementById("nip").value.trim();
+  const jabatan = document.getElementById("jabatan").value.trim();
+  const tujuan = document.getElementById("tujuan").value.trim();
+  const keperluan = document.getElementById("keperluan").value.trim();
   const tanggal = document.getElementById("tanggal").value;
 
-  const isiSurat = \`
-    Surat Tugas
-    ==========================
-    Yang bertanda tangan di bawah ini, menugaskan kepada:
-    Nama: \${nama}
-    NIP: \${nip}
-    Jabatan: \${jabatan}
+  if (!nama || !nip || !jabatan || !tujuan || !keperluan || !tanggal) {
+    alert("❌ Semua kolom wajib diisi!");
+    return;
+  }
 
-    Untuk melaksanakan tugas ke \${tujuan} pada tanggal \${tanggal}
-    Dalam rangka: \${keperluan}
+  const isiSurat = `
+Surat Tugas
+==========================
+Yang bertanda tangan di bawah ini, menugaskan kepada:
+Nama       : ${nama}
+NIP        : ${nip}
+Jabatan    : ${jabatan}
 
-    Demikian surat ini dibuat untuk digunakan sebagaimana mestinya.
-  \`;
+Untuk melaksanakan tugas ke ${tujuan} pada tanggal ${tanggal}
+Dalam rangka: ${keperluan}
+
+Demikian surat ini dibuat untuk digunakan sebagaimana mestinya.
+`;
 
   document.getElementById("previewSurat").innerText = isiSurat;
 
-  await addDoc(collection(db, "surat_tugas"), {
-    nama, nip, jabatan, tujuan, keperluan, tanggal, isiSurat, waktu: new Date()
-  });
+  try {
+    await addDoc(collection(db, "surat_tugas"), {
+      nama, nip, jabatan, tujuan, keperluan, tanggal, isiSurat, waktu: new Date()
+    });
 
-  alert("Surat berhasil disimpan ke database!");
+    // Tambah notifikasi sukses
+    const notif = document.createElement("p");
+    notif.textContent = "✅ Surat berhasil disimpan dan ditampilkan!";
+    notif.style.color = "green";
+    document.getElementById("previewSurat").appendChild(notif);
+  } catch (error) {
+    alert("❌ Gagal menyimpan ke Firebase. Periksa konfigurasi atau koneksi.");
+    console.error("Firebase Error:", error);
+  }
 });
 
 window.exportPDF = function () {
