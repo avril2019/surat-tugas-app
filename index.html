@@ -18,7 +18,14 @@
   </form>
 
   <h2>Preview Surat</h2>
-  <div id="previewSurat"></div>
+  <div id="previewSurat" style="margin-top: 20px; border: 1px solid #ccc; padding: 15px;"></div>
+  <div style="margin-top: 10px;">
+  <button onclick="exportPDF()">Download PDF</button>
+  <button onclick="exportWord()">Download Word</button>
+</div>
+
+<!-- Tempat Riwayat Surat -->
+<div id="riwayatSurat" style="margin-top: 30px;"></div>
   <button onclick="exportPDF()">Download PDF</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
