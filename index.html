@@ -8,9 +8,14 @@
 <body>
   <h1>Form Surat Tugas</h1>
   <form id="suratForm">
-    <input type="text" placeholder="Nama Pegawai" id="nama" required><br>
-    <input type="text" placeholder="NIP" id="nip" required><br>
-    <input type="text" placeholder="Jabatan" id="jabatan" required><br>
+    <select id="nama" required>
+      <option value="" disabled selected>Pilih Nama Pegawai</option>
+      <option value="andi" data-nip="19800101 123456 1 001" data-jabatan="Kepala Seksi">Andi Wijaya</option>
+      <option value="siti" data-nip="19850312 654321 2 002" data-jabatan="Staf TU">Siti Rahmawati</option>
+      <option value="budi" data-nip="19791231 789012 3 003" data-jabatan="Bendahara">Budi Hartono</option>
+    </select><br>
+    <input type="text" placeholder="NIP" id="nip" required readonly><br>
+    <input type="text" placeholder="Jabatan" id="jabatan" required readonly><br>
     <input type="text" placeholder="Tempat Tujuan" id="tujuan" required><br>
     <input type="text" placeholder="Keperluan" id="keperluan" required><br>
     <input type="date" id="tanggal" required><br>
@@ -20,15 +25,20 @@
   <h2>Preview Surat</h2>
   <div id="previewSurat" style="margin-top: 20px; border: 1px solid #ccc; padding: 15px;"></div>
   <div style="margin-top: 10px;">
-  <button onclick="exportPDF()">Download PDF</button>
-  <button onclick="exportWord()">Download Word</button>
-</div>
+    <button onclick="exportPDF()">Download PDF</button>
+    <button onclick="exportWord()">Download Word</button>
+  </div>
 
-<!-- Tempat Riwayat Surat -->
-<div id="riwayatSurat" style="margin-top: 30px;"></div>
-  <button onclick="exportPDF()">Download PDF</button>
+  <div id="riwayatSurat" style="margin-top: 30px;"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script type="module" src="script.js"></script>
+  <script>
+    document.getElementById("nama").addEventListener("change", function () {
+      const selected = this.options[this.selectedIndex];
+      document.getElementById("nip").value = selected.getAttribute("data-nip") || "";
+      document.getElementById("jabatan").value = selected.getAttribute("data-jabatan") || "";
+    });
+  </script>
 </body>
 </html>
